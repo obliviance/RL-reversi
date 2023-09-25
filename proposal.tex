@@ -1,1 +1,140 @@
+\documentclass{article}
 
+
+% if you need to pass options to natbib, use, e.g.:
+%     \PassOptionsToPackage{numbers, compress}{natbib}
+% before loading neurips_2023
+
+
+% ready for submission
+\usepackage[final]{neurips_2023}
+
+
+% to compile a preprint version, e.g., for submission to arXiv, add add the
+% [preprint] option:
+%     \usepackage[preprint]{neurips_2023}
+
+
+% to compile a camera-ready version, add the [final] option, e.g.:
+%     \usepackage[final]{neurips_2023}
+
+
+% to avoid loading the natbib package, add option nonatbib:
+%    \usepackage[nonatbib]{neurips_2023}
+
+
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage{xcolor}         % colors
+
+
+\title{RL-reversi}
+
+
+% The \author macro works with any number of authors. There are two commands
+% used to separate the names and addresses of multiple authors: \And and \AND.
+%
+% Using \And between authors leaves it to LaTeX to determine where to break the
+% lines. Using \AND forces a line break at that point. So, if LaTeX puts 3 of 4
+% authors names on the first line, and the last on the second line, try using
+% \AND instead of \And before the third author name.
+
+
+\author{
+  Cameron Humphreys\\Student: 101162528
+  Email: \texttt{CameronHumphreys@cmail.carleton.ca}
+  \and
+  \textbf{Lauris Petlah}\\Student: 101156789
+  Email: \texttt{laurispetlah@cmail.carleton.ca}
+  \and
+  \textbf{Sukhrobjon Eshmirzaev}\\Student: 101169793
+  Email: \texttt{ SukhrobjonEshmirzaev@cmail.carleton.ca}
+}
+
+
+\begin{document}
+
+
+\maketitle
+
+
+
+\section{Problem Statement}
+\label{problem_statement}
+
+\section{Feasibility}
+\label{feasibility}
+
+
+
+\section{Milestones}
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce elementum dolor eu odio interdum malesuada. Interdum et malesuada fames ac ante ipsum primis in faucibus. Phasellus et dolor vel mi ultrices dapibus. Quisque condimentum, libero nec iaculis malesuada, diam nunc blandit enim, et varius tellus justo id enim. Sed lectus neque, faucibus non nunc quis, tempor molestie orci. Fusce venenatis eros nec odio vestibulum pretium. Ut in mattis purus. Sed molestie dignissim quam, nec venenatis neque. Mauris ullamcorper quam in elit egestas, ut luctus arcu malesuada. Sed consequat nunc arcu, at egestas lacus lobortis vitae. Integer ut urna nisl. Curabitur eu justo quis mi auctor dapibus eget eget justo. Pellentesque id dapibus nulla, ac efficitur est. Praesent ut auctor purus. Morbi non nibh magna.
+
+Donec euismod justo sapien, imperdiet consequat nisi aliquet sagittis. Integer in pretium dolor. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vel ligula venenatis, fringilla orci nec, aliquam est. Donec id sem viverra, blandit diam a, vestibulum eros. Aenean arcu velit, placerat vitae sollicitudin vel, tristique id mauris. Duis auctor diam imperdiet nisl porttitor, ut bibendum nulla sollicitudin. Maecenas dapibus nulla at enim bibendum, vitae venenatis nisl pellentesque. Proin leo nisi, cursus non volutpat in, mollis et lorem. Sed sed lectus sed velit ullamcorper commodo. Nunc cursus metus eget feugiat tempor. Aliquam eu tortor augue. Vestibulum libero tortor, iaculis in urna eu, volutpat placerat neque. Integer commodo facilisis velit. In vel auctor tellus, quis volutpat orci. Nullam tempus, augue et laoreet laoreet, odio tellus tristique diam, ut sollicitudin quam risus quis ipsum.
+
+Phasellus a dui quis dui suscipit commodo. Curabitur in dui lorem. Praesent malesuada orci a sollicitudin semper. Nulla facilisi. Etiam id eros efficitur dolor lobortis accumsan. Etiam at cursus magna. Interdum et malesuada fames ac ante ipsum primis in faucibus. Nunc leo ipsum, luctus nec eros sed, elementum rutrum quam.
+
+Integer interdum, sapien eget imperdiet lobortis, nibh nulla venenatis quam, vel viverra tellus felis non dui. Fusce vitae enim purus. Aenean at ullamcorper augue, eu molestie lorem. Ut commodo nisl in dui vehicula, vitae dapibus mauris volutpat. Duis at dui euismod, molestie magna quis, egestas nunc. Maecenas tristique a justo id faucibus. Cras gravida posuere nibh eleifend cursus. Vestibulum eu risus nunc. Nulla at eros et mauris consequat dignissim quis non libero. In arcu sem, dictum ac purus nec, rhoncus eleifend nulla. Phasellus nisl libero, volutpat sed condimentum quis, scelerisque mattis enim.
+
+Quisque consectetur volutpat augue, dapibus posuere ante vulputate laoreet. Nam consequat lorem sit amet massa imperdiet, id mattis purus maximus. Fusce enim libero, hendrerit sed velit id, tempor facilisis tellus. Nunc eget orci id ipsum viverra lobortis eu quis nibh. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Duis ac ligula venenatis, volutpat velit ut, aliquam dolor. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Suspendisse ac purus arcu. In hac habitasse platea dictumst
+\label{milestones}
+
+%note: this table will be at the top of the page that it is on always, so when on the first page it would go before the title.
+\begin{table}
+  \caption{Milestone Dates}
+  \label{dates-table}
+  \centering
+  \begin{tabular}{lll}
+    \toprule
+    \multicolumn{2}{c}{Part}                   \\
+    \cmidrule(r){1-2}
+    Date     & Milestone                       \\
+    \midrule
+    30/10/2023 & Enviroment Demo               \\
+    06/12/2023 & Result Demo                   \\
+    10/12/2023 & Project Report                \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\section*{References}
+
+
+References follow the acknowledgments in the camera-ready paper. Use unnumbered first-level heading for
+the references. Any choice of citation style is acceptable as long as you are
+consistent. It is permissible to reduce the font size to \verb+small+ (9 point)
+when listing the references.
+Note that the Reference section does not count towards the page limit.
+\medskip
+
+
+{
+\small
+
+
+[1] Alexander, J.A.\ \& Mozer, M.C.\ (1995) Template-based algorithms for
+connectionist rule extraction. In G.\ Tesauro, D.S.\ Touretzky and T.K.\ Leen
+(eds.), {\it Advances in Neural Information Processing Systems 7},
+pp.\ 609--616. Cambridge, MA: MIT Press.
+
+
+[2] Bower, J.M.\ \& Beeman, D.\ (1995) {\it The Book of GENESIS: Exploring
+  Realistic Neural Models with the GEneral NEural SImulation System.}  New York:
+TELOS/Springer--Verlag.
+
+
+[3] Hasselmo, M.E., Schnell, E.\ \& Barkai, E.\ (1995) Dynamics of learning and
+recall at excitatory recurrent synapses and cholinergic modulation in rat
+hippocampal region CA3. {\it Journal of Neuroscience} {\bf 15}(7):5249-5262.
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\end{document}

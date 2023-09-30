@@ -3,5 +3,11 @@
 
 \section{Feasibility}
 \label{feasibility}
+In this section, we will explore how the fundamental concepts of reinforcement learning (RL) can be applied to Othello, with a focus on connecting the game to abstract ideas such as agents, an environment, actions, and short-term as well as long-term rewards. This projects aims to employ RL algorithms to create intelligent agents that mimic human players capable of making strategic decisions. These agents will interact with the game's environment, an $8\times8$ grid by selecting legal actions governed by an adaptive algorithm, learning optimal policies and strategies that maximize cumalitive rewards. These rewards can be in the form of,
+\begin{itemize}
+  \item Short-term rewards, such as capturing opponent discs, and
+  \item Long-term rewards, such as the desired end-state of dominating the board, and winning the game.
+\end{itemize}
+This project's goal focuses on the different methods of using RL, including using reinforcement learning techniques such as Deep Q-Learning, Q-tables, and Self-play to train agents for Othello. The challenges include optmizing against the fact that the $8\times8$ sized board contains approximately $3^{64}$ possible states, each with an set of actions $\geq0$, which prevent the use of simple enumerative techniques and requires more sophisticated algorithms. The potential of the use of RL algorithms appears to be worthwile to explore, allowing us to master complex strategy games like Othello.
 
 \end{document}

@@ -15,8 +15,8 @@ ADJACENCY_GRID = [
 class OthelloEnvironment(gym.Env):
     metadata = {"render_fps":20}
     def _player_to_action_space(self,player):
-        if(DISK_WHITE): return 0
-        if(DISK_BLACK): return 1
+        if(player==DISK_BLACK): return 0
+        if(player==DISK_WHITE): return 1
         else: raise ValueError("Invalid input for player: " + str(player))
 
     def __init__(self, render_mode=None, init_state : np.ndarray = None, starting_player:int = DISK_BLACK, my_player : int = DISK_BLACK):
@@ -50,15 +50,22 @@ class OthelloEnvironment(gym.Env):
             else:
                 self.board = self.reset()[0]
 
+    def set_state(self, state : np.ndarray, current_player: int, my_player: int = DISK_BLACK):
+        self.quit_render = False
+        self.current_player = current_player
+        self.player = my_player
+        self.board = state
+        return (self.board, self._player_to_action_space(self.current_player))
+
     def reset(self):
         self.quit_render = False
-        self.current_player = DISK_WHITE
-        board = np.zeros((8,8),dtype=np.int_)
-        board[3,3] = DISK_WHITE
-        board[4,4] = DISK_WHITE
-        board[3,4] = DISK_BLACK
-        board[4,3] = DISK_BLACK
-        return (board, self._player_to_action_space(self.current_player))
+        self.current_player = DISK_BLACK
+        self.board = np.zeros((8,8),dtype=np.int_)
+        self.board[3,3] = DISK_WHITE
+        self.board[4,4] = DISK_WHITE
+        self.board[3,4] = DISK_BLACK
+        self.board[4,3] = DISK_BLACK
+        return (self.board, self._player_to_action_space(self.current_player))
 
     def render(self, draw_legal_moves = False):
         if self.window is None:
@@ -142,15 +149,18 @@ class OthelloEnvironment(gym.Env):
         if board is None:
             board = self.board
         if board[action[0], action[1]] != EMPTY_SPACE:
-            return False
+            return (False, [])
         
         my_color = self.current_player
         opponent_color = -my_color
 
         action = np.array(action)
+        is_legal = False
+        legal_directions = []
         for direction in ADJACENCY_GRID:
             legal = True
             direction = np.array(direction)
+            length = -1
             for i in range(1,8):
                 current_space = action + direction * i
 
@@ -164,19 +174,21 @@ class OthelloEnvironment(gym.Env):
                 
                 if(i > 1 and current_board_value == my_color):
                     legal = True
+                    length = i
                     break
                 if(current_board_value != opponent_color):
                     legal = False
                     break
 
             if legal:
-                return legal
-        return False
+                legal_directions.append((direction, length))
+                is_legal = True
+        return is_legal, legal_directions
     
     def get_legal_moves(self, board=None, return_as="board"):
         legal_moves = np.zeros((8,8))
         for r, c in np.ndindex(self.shape):
-            legal_moves[r,c] = self.check_if_legal_move((r,c), board=board)
+            legal_moves[r,c] = self.check_if_legal_move((r,c), board=board)[0]
 
         if(return_as.lower() == "board"):
             return legal_moves
@@ -191,22 +203,35 @@ class OthelloEnvironment(gym.Env):
     def get_winner(self):
         return DISK_WHITE if self.board.sum() > 0 else DISK_BLACK
     
+    def _take_action(self, action : tuple):
+        is_legal, legal_moves = self.check_if_legal_move(action)
+        if not is_legal: return
+        
+        action = np.array(action)
+        for direction, length in legal_moves:
+            for i in range(length):
+                current_space = action + direction * i
+                self.board[current_space[0],current_space[1]] = self.current_player
+        
     def step(self, action : tuple):
         legal_moves = self.get_legal_moves(return_as="list")
 
         if(action not in legal_moves):
-            return (self.board, self._player_to_action_space(self.current_player)), 0, False, False, {"error":" invalid action"}
-        
-        self.board[action[0],action[1]] = self.current_player
+            return (self.board, self._player_to_action_space(self.current_player)), 0, False, False, {"error":"invalid action"}
+       
+        self._take_action(action)
         self.current_player = -self.current_player
         if len(self.get_legal_moves(return_as="list")) == 0:
             self.current_player = -self.current_player
         
+
+        legal_moves = self.get_legal_moves(return_as="list")
         reward = 0
         terminated = False
-        info = {"legal_moves":self.get_legal_moves(return_as="list")}
-        if self.is_game_over():
-            reward = self.board.sum() * self.player
+        info = {"legal_moves":legal_moves}
+        if self.is_game_over() or len(legal_moves) == 0:
+            gameSum = self.board.sum()
+            reward = -1 if gameSum == 0 else np.sign(gameSum * self.player)
             terminated = True
             info = {}
         

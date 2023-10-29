@@ -1,12 +1,12 @@
 #testbed for enviroment demo, mirrors the a2 enviroment testbed
-from ReversiHelpers import gameBoard
+from ReversiHelpers import OthelloEnvironment
 
 def _plotGameBoard():
-    env = gameBoard()
+    env = OthelloEnvironment()
     #do something to the enviroment
 
     #loop to render the board
-    while True:
+    while not env.end_render():
         env.render()
 
     env.close()

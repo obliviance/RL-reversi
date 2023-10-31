@@ -67,7 +67,7 @@ class OthelloEnvironment(gym.Env):
         self.board[4,3] = DISK_BLACK
         return (self.board, self._player_to_action_space(self.current_player))
 
-    def render(self, draw_legal_moves = False):
+    def render(self):
         if self.window is None:
             pygame.init()
             pygame.display.init()
@@ -84,7 +84,7 @@ class OthelloEnvironment(gym.Env):
                     return
 
         legal_moves = None
-        if draw_legal_moves:
+        if self.render_mode == "human":
             legal_moves = self.get_legal_moves()
 
         # Fill background
@@ -108,6 +108,7 @@ class OthelloEnvironment(gym.Env):
             )
         
         # Draw Disks
+        font = pygame.font.SysFont(None, 24)
         for r, c in np.ndindex(self.shape):
             if(self.board[r,c] in [DISK_WHITE, DISK_BLACK]):
                 color = (255,255,255) if self.board[r,c] == DISK_WHITE else 0
@@ -118,7 +119,15 @@ class OthelloEnvironment(gym.Env):
                     self.window_cell_size / 3,
                 )
             if legal_moves is not None and legal_moves[r,c]:
+                #testing
+                text = str(r) + "," + str(c)
+                img = font.render(text, True, (255,25,55))
+                #rect = pygame.Rect(c, r, self.window_cell_size, self.window_cell_size)
+                #rect = pygame.draw.rect(self.window, (255, 255, 255), )
                 color = (255,25,55)
+                #img_rect = img.get_rect()
+                
+                self.window.blit(img, (c* self.window_cell_size, r* self.window_cell_size))
                 pygame.draw.circle(
                     self.window,
                     color,
@@ -126,7 +135,6 @@ class OthelloEnvironment(gym.Env):
                     self.window_cell_size / 6,
                 )
        
-        # The following line copies our drawings from `canvas` to the visible window
         pygame.event.pump()
         if self.is_game_over():
             pygame.display.set_caption("White is winner!" if self.get_winner() else "Black is Winner!")

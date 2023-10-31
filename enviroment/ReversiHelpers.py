@@ -51,6 +51,10 @@ class OthelloEnvironment(gym.Env):
                 self.board = self.reset()[0]
 
     def set_state(self, state : np.ndarray, current_player: int, my_player: int = DISK_BLACK):
+        """
+        Sets the board to be equal to the `state`, 
+        with the next player to go being current_player and the player we currently are being `my_player`
+        """
         self.quit_render = False
         self.current_player = current_player
         self.player = my_player
@@ -58,6 +62,10 @@ class OthelloEnvironment(gym.Env):
         return (self.board, self._player_to_action_space(self.current_player))
 
     def reset(self):
+        """
+        Resets the environment to basic grid with 4 tiles in the middle, 
+        as well as current player being the black player, and the next player to move is the black player
+        """
         self.quit_render = False
         self.current_player = DISK_BLACK
         self.board = np.zeros((8,8),dtype=np.int_)
@@ -146,6 +154,10 @@ class OthelloEnvironment(gym.Env):
             pygame.quit()
 
     def check_if_legal_move(self, action: tuple, board = None):
+        """
+        Checks if the given action is legal for the given board (use the environment board if none is given) given the current environment player.
+        - Returns a tuple of (`is_legal`, `[list of legal directions and the lengths of those directions]`)
+        """
         if board is None:
             board = self.board
         if board[action[0], action[1]] != EMPTY_SPACE:
@@ -186,6 +198,14 @@ class OthelloEnvironment(gym.Env):
         return is_legal, legal_directions
     
     def get_legal_moves(self, board=None, return_as="board"):
+        """
+        Gets all the legal moves for the current player on the specified `board`
+        - If no `board` is specified, use the environment board
+        - `return_as`: specifies what the return type is
+            - `return_as="board"` specifies a 8*8 grid of zeros with ones as the legal spaces
+            - `return_as="list"` specifies a list of legal moves, each as a 2-tuple of int
+        """
+        
         legal_moves = np.zeros((8,8))
         for r, c in np.ndindex(self.shape):
             legal_moves[r,c] = self.check_if_legal_move((r,c), board=board)[0]
@@ -214,6 +234,15 @@ class OthelloEnvironment(gym.Env):
                 self.board[current_space[0],current_space[1]] = self.current_player
         
     def step(self, action : tuple):
+        """
+        given an action of form `(row, column)`:
+        - grabs all legal moves
+        - checks if current action is a legal move
+        - takes action, flipping disks
+        - switches player if and only if the other player has legal moves
+        - check if game is over, (no more free spaces, or no legal moves for either player), giving a reward of -1 on loss or draw for the player you started as.
+        - return state `(board, current_player)`, reward, terminated, truncated, and info which has either error messages, or legal moves for next player.
+        """
         legal_moves = self.get_legal_moves(return_as="list")
 
         if(action not in legal_moves):

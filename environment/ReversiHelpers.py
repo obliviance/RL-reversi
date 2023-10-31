@@ -171,7 +171,7 @@ class OthelloEnvironment(gym.Env):
             length = -1
             for i in range(1,8):
                 current_space = action + direction * i
-
+                length = i
                 # Bounds Checking
                 if(not ((current_space>=0) & (current_space < 8)).all()):
                     legal = False
@@ -182,8 +182,8 @@ class OthelloEnvironment(gym.Env):
                 
                 if(i > 1 and current_board_value == my_color):
                     legal = True
-                    length = i
                     break
+
                 if(current_board_value != opponent_color):
                     legal = False
                     break

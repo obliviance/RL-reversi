@@ -2,7 +2,6 @@ import unittest
 
 import numpy as np
 from ReversiHelpers import *
-import time
 
 class TestOthelloEnvironment(unittest.TestCase):
 
@@ -159,7 +158,7 @@ class TestOthelloEnvironment(unittest.TestCase):
         
         
     def test_mockGame(self):
-        for game in range(1): # change count to change number of mock games played
+        for game in range(20): # change count to change number of mock games played
             self.env.reset()
             game_ended = False
             legal_moves = self.env.get_legal_moves(return_as="list")
@@ -167,7 +166,6 @@ class TestOthelloEnvironment(unittest.TestCase):
             for i in range(64):
                 if(len(legal_moves) == 0):
                     break
-                print(type(legal_moves[0]))
                 (board, _), reward, terminated, _, info= self.env.step( legal_moves[np.random.choice(len(legal_moves))])
                 if('error' in info.keys()):
                     self.fail("Should not have chosen a bad move")
@@ -175,10 +173,6 @@ class TestOthelloEnvironment(unittest.TestCase):
                     game_ended = True
                     break
                 legal_moves = info['legal_moves']  
-                self.env.render()
-                time.sleep(0.5)     
-            if(not game_ended):
-                print(game, board, reward)
             self.assertTrue(game_ended)
 
 if __name__ == '__main__':

@@ -1,43 +1,68 @@
-#testbed for enviroment demo, mirrors the a2 enviroment testbed
 from ReversiHelpers import *
+import sys 
 
-
-def _plotGameBoard():
+def human_game():
     render_mode = "human" # or "human" to engage human play
     env = OthelloEnvironment(render_mode = render_mode)
-    #do something to the enviroment
     if (render_mode == "human"):
         terminated = False
         while(not terminated):
+
             #render the enviroment to show the player the state and the actions they can take
             env.render()
-            if(len(env.get_legal_moves()) == 0):
-                break
-            input_string = input("Please choose a position to place your piece, in the form 'X Y': ")
-            input_string = ''.join(c for c in input_string if c.isdigit())
-            action = tuple(map(int, input_string))
-            inputFlag = False
-            if (len(action) != 2 or (action[0]>=env.length or action [1] >= env.length) or (action[0] < 0 or action [1] < 0)):
-                inputFlag = True
-            else:
-                (_, _), _, terminated, _, info= env.step(action)
-            while(inputFlag or 'error' in info.keys()):
-                #user typed an unallowed action, try again#this wont work with just strings...
-                print("That was not a legal move, try again", inputFlag, "\n")
-                input_string = input("Please choose a valid position to place your piece, in the form 'X Y': ")
-                input_string = ''.join(c for c in input_string if c.isdigit())
-                action = tuple(map(int, input_string))
-                if (len(action) != 2 or (action[0]>=env.length or action [1] >= env.length) or (action[0] < 0 or action [1] < 0)):
-                    inputFlag = True
-                else: 
-                    inputFlag = False 
-                    (_, _), _, terminated, _, info= env.step(action)
-        #game over
+
+            # Ask for Input
+            input_string = input("Please choose a position to place your piece, in the form 'row col': ")
+            input_values = input_string.split(' ')
+            
+            # Verify if all 2 inputs are digits
+            if(not(len(input_values) == 2 and all([element.isdigit() for element in input_values]))):
+                print("Invalid Input")
+                continue
+
+            # Verify if action is legal
+            legal_moves = env.get_legal_moves(return_as="list")
+            action = tuple((int(x) for x in input_values))
+            if(action not in legal_moves):
+                print("Action not a legal move")
+                continue
+            
+            # Do Move
+            (_, _), _, terminated, _, _= env.step(action)
+
+        # Game over
         if (env.get_winner() == DISK_WHITE):
             print("----CONGRATULATIONS TO WHITE FOR WINNING THE GAME----")
         if (env.get_winner() == DISK_BLACK):
             print("----CONGRATULATIONS TO BLACK FOR WINNING THE GAME----")
+
     env.close()
 
+def auto_game():
+    # Make Environment
+    env = OthelloEnvironment(render_mode = "human")
+    env.reset()
+    legal_moves = env.get_legal_moves(return_as="list")
+
+    for i in range(64):
+
+        if(len(legal_moves) == 0):
+            break
+
+        (_, _), _, terminated, _, info = env.step( legal_moves[np.random.choice(len(legal_moves))])
+
+        if(terminated):
+            break
+
+        legal_moves = info['legal_moves']  
+        env.render()
+
+    env.render()
+
 if __name__ == "__main__":
-    _plotGameBoard()
+    if len(sys.argv) > 1:
+        if sys.argv[1] == 'human':
+            human_game()
+            quit(0)
+    
+    auto_game()

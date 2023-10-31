@@ -13,7 +13,9 @@ ADJACENCY_GRID = [
 ]
 
 class OthelloEnvironment(gym.Env):
-    metadata = {"render_fps":20}
+
+    metadata = {"render_fps":2}
+
     def _player_to_action_space(self,player):
         if(player==DISK_BLACK): return 0
         if(player==DISK_WHITE): return 1
@@ -119,13 +121,11 @@ class OthelloEnvironment(gym.Env):
                     self.window_cell_size / 3,
                 )
             if legal_moves is not None and legal_moves[r,c]:
-                #testing
+
+                # Display Text on legal move
                 text = str(r) + "," + str(c)
                 img = font.render(text, True, (255,25,55))
-                #rect = pygame.Rect(c, r, self.window_cell_size, self.window_cell_size)
-                #rect = pygame.draw.rect(self.window, (255, 255, 255), )
                 color = (255,25,55)
-                #img_rect = img.get_rect()
                 
                 self.window.blit(img, (c* self.window_cell_size, r* self.window_cell_size))
                 pygame.draw.circle(

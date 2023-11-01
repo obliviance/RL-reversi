@@ -1,0 +1,4 @@
+numpy==1.25.2
+gymnasium==0.28.1
+pygame==2.5.2
+unittest==1.1.0

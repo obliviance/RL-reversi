@@ -32,7 +32,7 @@ def human_game():
             (_, _), reward, terminated, _, _= env.step(action)
 
         # Game over
-        print("Winner is", "White" if env.get_winner() == DISK_WHITE else "Black")
+        print("Winner is", "White" if env.get_winner() == DISK_WHITE else "Black" if env.get_winner() == DISK_BLACK else "Draw")
         print("Reward is", reward)
 
     env.close()
@@ -57,7 +57,7 @@ def auto_game():
         env.render()
 
     env.render()
-    print("Winner is", "White" if env.get_winner() == DISK_WHITE else "Black")
+    print("Winner is", "White" if env.get_winner() == DISK_WHITE else "Black" if env.get_winner() == DISK_BLACK else "Draw")
     print("Reward is", reward)
 
 if __name__ == "__main__":

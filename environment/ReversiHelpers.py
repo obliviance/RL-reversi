@@ -61,6 +61,8 @@ class OthelloEnvironment(gym.Env):
         self.current_player = current_player
         self.player = my_player
         self.board = state
+        self.is_game_over = False
+        self.winner = None
         return (self.board, self._player_to_action_space(self.current_player))
 
     def reset(self):
@@ -75,6 +77,8 @@ class OthelloEnvironment(gym.Env):
         self.board[4,4] = DISK_WHITE
         self.board[3,4] = DISK_BLACK
         self.board[4,3] = DISK_BLACK
+        self.is_game_over = False
+        self.winner = None
         return (self.board, self._player_to_action_space(self.current_player))
 
     def render(self):
@@ -144,8 +148,8 @@ class OthelloEnvironment(gym.Env):
                 )
        
         pygame.event.pump()
-        if self.is_game_over():
-            pygame.display.set_caption("White is winner!" if self.get_winner() else "Black is Winner!")
+        if self.is_game_over:
+            pygame.display.set_caption("White is winner!" if self.winner == DISK_WHITE else "Black is Winner!" if self.winner == DISK_BLACK else "Draw!")
         else:
             pygame.display.set_caption("White to move." if self.current_player == DISK_WHITE else "Black to move.")
         pygame.display.update()
@@ -225,11 +229,9 @@ class OthelloEnvironment(gym.Env):
         else:
             raise ValueError("return_as has invalid value: " + return_as)
         
-    def is_game_over(self):
-        return (self.board != EMPTY_SPACE).all()
     
     def get_winner(self):
-        return DISK_WHITE if self.board.sum() > 0 else DISK_BLACK
+        return self.winner
     
     def _take_action(self, action : tuple):
         is_legal, legal_moves = self.check_if_legal_move(action)
@@ -267,11 +269,16 @@ class OthelloEnvironment(gym.Env):
         reward = 0
         terminated = False
         info = {"legal_moves":legal_moves}
-        if self.is_game_over() or len(legal_moves) == 0:
+        if len(legal_moves) == 0:
             gameSum = self.board.sum()
+            if gameSum != 0:
+                self.winner = np.sign(gameSum)
+            else:
+                self.winner = EMPTY_SPACE
             reward = -1 if gameSum == 0 else np.sign(gameSum * self.player)
             terminated = True
             info = {}
+            self.is_game_over = True
         
         return (self.board, self._player_to_action_space(self.current_player)), reward, terminated, False, info
 

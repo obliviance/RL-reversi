@@ -158,7 +158,7 @@ class TestOthelloEnvironment(unittest.TestCase):
         
         
     def test_mockGame(self):
-        for game in range(1): # change count to change number of mock games played
+        for game in range(20): # change count to change number of mock games played
             self.env.reset()
             game_ended = False
             legal_moves = self.env.get_legal_moves(return_as="list")
@@ -172,9 +172,7 @@ class TestOthelloEnvironment(unittest.TestCase):
                 if(terminated):
                     game_ended = True
                     break
-                legal_moves = info['legal_moves']
-            if(not game_ended):
-                print(game, board, reward)
+                legal_moves = info['legal_moves']  
             self.assertTrue(game_ended)
 
 if __name__ == '__main__':

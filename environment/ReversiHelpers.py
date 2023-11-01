@@ -253,7 +253,8 @@ class OthelloEnvironment(gym.Env):
         """
         legal_moves = self.get_legal_moves(return_as="list")
 
-        if(action not in legal_moves):
+        # Check if action in legal moves
+        if(not any((legal_moves[:] == action).all(1))):
             return (self.board, self._player_to_action_space(self.current_player)), 0, False, False, {"error":"invalid action"}
        
         self._take_action(action)

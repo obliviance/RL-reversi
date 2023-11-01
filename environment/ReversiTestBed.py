@@ -6,6 +6,7 @@ def human_game():
     env = OthelloEnvironment(render_mode = render_mode)
     if (render_mode == "human"):
         terminated = False
+        reward = None
         while(not terminated):
 
             #render the enviroment to show the player the state and the actions they can take
@@ -23,18 +24,16 @@ def human_game():
             # Verify if action is legal
             legal_moves = env.get_legal_moves(return_as="list")
             action = tuple((int(x) for x in input_values))
-            if(action not in legal_moves):
+            if(not any((legal_moves[:] == action).all(1))):
                 print("Action not a legal move")
                 continue
             
             # Do Move
-            (_, _), _, terminated, _, _= env.step(action)
+            (_, _), reward, terminated, _, _= env.step(action)
 
         # Game over
-        if (env.get_winner() == DISK_WHITE):
-            print("----CONGRATULATIONS TO WHITE FOR WINNING THE GAME----")
-        if (env.get_winner() == DISK_BLACK):
-            print("----CONGRATULATIONS TO BLACK FOR WINNING THE GAME----")
+        print("Winner is", "White" if env.get_winner() == DISK_WHITE else "Black")
+        print("Reward is", reward)
 
     env.close()
 
@@ -43,13 +42,13 @@ def auto_game():
     env = OthelloEnvironment(render_mode = "human")
     env.reset()
     legal_moves = env.get_legal_moves(return_as="list")
-
+    reward = None
     for i in range(64):
 
         if(len(legal_moves) == 0):
             break
 
-        (_, _), _, terminated, _, info = env.step( legal_moves[np.random.choice(len(legal_moves))])
+        (_, _), reward, terminated, _, info = env.step( legal_moves[np.random.choice(len(legal_moves))])
 
         if(terminated):
             break
@@ -58,6 +57,8 @@ def auto_game():
         env.render()
 
     env.render()
+    print("Winner is", "White" if env.get_winner() == DISK_WHITE else "Black")
+    print("Reward is", reward)
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:

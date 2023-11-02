@@ -182,7 +182,7 @@ class OthelloEnvironment(gym.Env):
         is_legal = False
         legal_directions = []
         for direction in ADJACENCY_GRID:
-            legal = True
+            legal = False
             direction = np.array(direction)
             length = -1
             for i in range(1,8):

@@ -39,7 +39,7 @@ def human_game():
 
 def auto_game():
     # Make Environment
-    env = OthelloEnvironment(render_mode = "human")
+    env = OthelloEnvironment(render_mode = "human",reward_style="custom")
     env.reset()
     legal_moves = env.get_legal_moves(return_as="list")
     reward = None
@@ -55,6 +55,7 @@ def auto_game():
 
         legal_moves = info['legal_moves']  
         env.render()
+        print(env.current_player, reward)
 
     env.render()
     print("Winner is", "White" if env.get_winner() == DISK_WHITE else "Black" if env.get_winner() == DISK_BLACK else "Draw")

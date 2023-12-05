@@ -1,3 +1,4 @@
+import argparse
 import random
 import sys
 import time
@@ -16,19 +17,26 @@ def getPlayers():
     }
 
 
+parser = argparse.ArgumentParser(
+    prog='ComparePlayers',
+    description='Compare players against eachother')
+
+parser.add_argument('p1')
+parser.add_argument('p2')
+parser.add_argument('--games', type=int, default=1)
+parser.add_argument('--quiet', action='store_true')
+parser.add_argument('--human-render', action='store_true')
+
 if __name__ == "__main__":
-    if (not (4 <= len(sys.argv) <= 5)):
-        print("Invalid Input. Use \'python\' ComparePlayer.py <num_games> <player1> <player2> <optional=human|quiet>")
-        quit(1)
-    view = None
-    verbosity = None
-    if len(sys.argv) == 4:
-        [_, num_games, p1_type, p2_type] = sys.argv
-    else:
-        [_, num_games, p1_type, p2_type, verbosity] = sys.argv
-    if(verbosity == 'human'):
-        view = verbosity
-    num_games = int(num_games)
+    args = parser.parse_args()
+    p1_type = args.p1
+    p2_type = args.p2
+
+    view = "human" if args.human_render else None
+    quiet = args.quiet
+
+    num_games = args.games
+
     players = getPlayers()
     p1 = players[p1_type]
     p2 = players[p2_type]
@@ -57,7 +65,7 @@ if __name__ == "__main__":
             }
         
         print("Starting round", game, "of", num_games)
-        if(verbosity != 'quiet'):
+        if not quiet:
             print(f"Black Player is {colors[DISK_BLACK][1]}")
             print(f"White Player is {colors[DISK_WHITE][1]}")
         else:
@@ -68,9 +76,9 @@ if __name__ == "__main__":
         while not terminated:
             policy, name = colors[env.current_player]
             policy: PolicyPlayer = policy
-            if(verbosity != 'quiet'):
+            if not quiet:
                 print(f"Player {name}'s turn!")
-            if view == "human":
+            if view:
                 env.render()
             action = policy.pick_action(env, state, legal_actions)
             state, reward, terminated, _, info = env.step(action)
@@ -78,9 +86,9 @@ if __name__ == "__main__":
                 raise info['error']
             if ('legal_moves' in info):
                 legal_actions = info['legal_moves']
-            if(verbosity != 'quiet'):
+            if not quiet:
                 print(f"{name} plays move {action}!")
-            if view == "human":
+            if view:
                 env.render()
 
         winner = env.get_winner()
@@ -90,10 +98,10 @@ if __name__ == "__main__":
         else:
             print("Game is a draw!")
             scores['draws'] += 1
-        if verbosity == 'quiet':
+        if quiet:
             print('Round Finished in', time.time() - round_start,'seconds')
     print("Final Scores:")
     for name in scores:
         print(f'\t{name}: {scores[name]}')
-    if verbosity == 'quiet':
+    if quiet:
         print('Games Finished in', time.time() - game_start, 'seconds')

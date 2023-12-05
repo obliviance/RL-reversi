@@ -1,4 +1,3 @@
-
 from environment.ReversiHelpers import DISK_BLACK, DISK_WHITE, OthelloEnvironment
 from collections import deque
 import random
@@ -101,7 +100,7 @@ def do_step(env: OthelloEnvironment, action):
 
     return new_state, reward, terminated, legal_actions
 
-def fit_sars(model, sars_list, gamma):
+def fit_sars(env, model, sars_list, gamma):
     state_actions = np.array(list(map(lambda x: flatten_state_action_pair(x[0],x[1]), sars_list)))
     q_sa_updated = []
     for sars in sars_list:
@@ -184,7 +183,7 @@ def learn_each_timestep(env: OthelloEnvironment, model: tf.keras.Model, episodes
               DISK_BLACK else "White" if winner == DISK_WHITE else "Draw")
 
         if (len(sars) != 0):
-            fit_sars(model, sars, gamma)
+            fit_sars(env, model, sars, gamma)
         print("Episode completed in \'" +
               str(time.time() - episode_time) + "\' seconds")
         old_model = model
@@ -227,32 +226,3 @@ def validate_against_random(env: OthelloEnvironment, model: tf.keras.Model, epis
 
         print("Done!")
     return scores
-
-
-
-env = OthelloEnvironment()
-model = make_model([64], 'sigmoid', 0.0001)
-learn_each_timestep(env, model, 100, gamma=0.1,
-                   num_replay=256, epsilon=0.1,selfplay=False,pbrs=True)
-
-scores = validate_against_random(env, model, 50)
-
-scores = np.array(scores)
-cumulative_loss = np.cumsum([1 if x < 0 else 0 for x in scores])
-cumulative_wins = np.cumsum([1 if x > 0.9 else 0 for x in scores])
-cumulative_draws = np.cumsum(
-    [1 if np.abs(x-0.5) <= 0.05 else 0 for x in scores])
-
-fig, axes = plt.subplots(1, 1)
-print(scores)
-print('Wins', cumulative_wins[-1])
-print('Draws', cumulative_draws[-1])
-print('Losses', cumulative_loss[-1])
-axes.plot(cumulative_wins, label='wins')
-axes.plot(cumulative_draws, label='draws')
-axes.plot(cumulative_loss, label='loss')
-axes.legend()
-fig.savefig('DQN.png')
-
-
-model.save('model.dqn')

@@ -12,13 +12,32 @@ def flatten_state_action_pair(state: tuple[np.ndarray, int], action: np.ndarray)
     )).flatten().astype(np.int32)
 
 
+def flatten_state(state: tuple[np.ndarray, int]):
+    return np.concatenate((
+        np.array([state[1]]),
+        state[0].flatten(),
+    )).flatten().astype(np.int32)
+
+
 class DQN_Player(PolicyPlayer):
-    def __init__(self, model_name:str):
+    def __init__(self, model_name: str):
         import tensorflow as tf
         self.model = tf.keras.models.load_model(model_name)
-        
-    def pick_action(self, env : OthelloEnvironment, state: tuple[np.ndarray, int], legal_actions:List[tuple[int, int]]) -> ACTION:
-        state_action_pairs = list(map(lambda x: flatten_state_action_pair(state, x), legal_actions))
-        q_values = self.model.predict(np.array(state_action_pairs),verbose=0)
+
+    def pick_action(self, env: OthelloEnvironment, state: tuple[np.ndarray, int], legal_actions: List[tuple[int, int]]) -> ACTION:
+        state_action_pairs = list(
+            map(lambda x: flatten_state_action_pair(state, x), legal_actions))
+        q_values = self.model.predict(np.array(state_action_pairs), verbose=0)
         best_action = legal_actions[np.argmax(q_values)]
-        return best_action   
+        return best_action
+
+
+class DQN2_Player(PolicyPlayer):
+    def __init__(self, model_name: str):
+        import tensorflow as tf
+        self.model = tf.keras.models.load_model(model_name)
+
+    def pick_action(self, env: OthelloEnvironment, state: tuple[np.ndarray, int], legal_actions: List[tuple[int, int]]) -> ACTION:
+        q_values = self.model.predict(np.array([flatten_state(state)]), verbose=0)[0]
+        best_action = legal_actions[np.argmax(q_values[legal_actions[:,0],legal_actions[:,1]])]
+        return best_action

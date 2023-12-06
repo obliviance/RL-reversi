@@ -1,6 +1,7 @@
 
 import argparse
 from matplotlib import pyplot as plt
+from environment.ReversiHelpers import OthelloEnvironment
 
 import numpy as np
 
@@ -17,14 +18,20 @@ parser.add_argument('--episodes', type=int, default=100)
 parser.add_argument('--replay', type=int, default=2048)
 parser.add_argument('--selfplay', action='store_true')
 parser.add_argument('--pbrs', action='store_true')
+parser.add_argument('--dqn2', action='store_true')
 parser.add_argument('--evaluate', type=int, default=0)
 if __name__ == "__main__":
-    from dqn.dqn import learn_each_timestep, make_model, validate_against_random
-    from environment.ReversiHelpers import OthelloEnvironment
-
+    
     args = parser.parse_args()
+    if args.dqn2:
+        from dqn.dqn2 import learn_each_timestep, make_model, validate_against_random
+    else:
+        from dqn.dqn import learn_each_timestep, make_model, validate_against_random
+        
+
+
     env = OthelloEnvironment()
-    model = make_model([64], 'sigmoid', args.alpha)
+    model = make_model([64,64,64], 'sigmoid', args.alpha)
     learn_each_timestep(env, model, args.episodes, gamma=args.gamma,
                         num_replay=args.replay, epsilon=args.epsilon, selfplay=args.selfplay, pbrs=args.pbrs)
     model.save(args.model_name)

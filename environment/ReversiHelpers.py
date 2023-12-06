@@ -20,8 +20,12 @@ class OthelloEnvironment(gym.Env):
         if(player==DISK_BLACK): return 0
         if(player==DISK_WHITE): return 1
         else: raise ValueError("Invalid input for player: " + str(player))
+    def _action_space_to_player(self,player):
+        if(player==0): return DISK_BLACK
+        if(player==1): return DISK_WHITE
+        else: raise ValueError("Invalid input for player: " + str(player))
 
-    def __init__(self, render_mode=None, init_state : np.ndarray = None, starting_player:int = DISK_BLACK, my_player : int = DISK_BLACK):
+    def __init__(self, render_mode=None, init_state : np.ndarray = None, starting_player:int = DISK_BLACK, my_player : int = DISK_BLACK,reward_style="default"):
 
             # Initial info :
             assert my_player in [DISK_WHITE, DISK_BLACK]
@@ -30,6 +34,7 @@ class OthelloEnvironment(gym.Env):
             self.length = 8
             self.shape = (8,8)
 
+            self.reward_style = reward_style
 
             # observation & action space
             self.action_space = gym.spaces.Tuple((gym.spaces.Discrete(self.length),gym.spaces.Discrete(self.length))) # 8*8=64 actions
@@ -65,7 +70,7 @@ class OthelloEnvironment(gym.Env):
         self.winner = None
         return (self.board, self._player_to_action_space(self.current_player))
 
-    def reset(self):
+    def reset(self, seed=0,options={}):
         """
         Resets the environment to basic grid with 4 tiles in the middle, 
         as well as current player being the black player, and the next player to move is the black player
@@ -165,7 +170,7 @@ class OthelloEnvironment(gym.Env):
             pygame.display.quit()
             pygame.quit()
 
-    def check_if_legal_move(self, action: tuple, board = None):
+    def check_if_legal_move(self, action: tuple, board = None, player = None):
         """
         Checks if the given action is legal for the given board (use the environment board if none is given) given the current environment player.
         - Returns a tuple of (`is_legal`, `[list of legal directions and the lengths of those directions]`)
@@ -175,7 +180,7 @@ class OthelloEnvironment(gym.Env):
         if board[action[0], action[1]] != EMPTY_SPACE:
             return (False, [])
         
-        my_color = self.current_player
+        my_color = self.current_player if player == None else player
         opponent_color = -my_color
 
         action = np.array(action)
@@ -209,7 +214,7 @@ class OthelloEnvironment(gym.Env):
                 is_legal = True
         return is_legal, legal_directions
     
-    def get_legal_moves(self, board=None, return_as="board"):
+    def get_legal_moves(self, board=None, return_as="board", player = None):
         """
         Gets all the legal moves for the current player on the specified `board`
         - If no `board` is specified, use the environment board
@@ -220,7 +225,7 @@ class OthelloEnvironment(gym.Env):
         
         legal_moves = np.zeros((8,8))
         for r, c in np.ndindex(self.shape):
-            legal_moves[r,c] = self.check_if_legal_move((r,c), board=board)[0]
+            legal_moves[r,c] = self.check_if_legal_move((r,c), board=board,player=player)[0]
 
         if(return_as.lower() == "board"):
             return legal_moves
@@ -259,6 +264,10 @@ class OthelloEnvironment(gym.Env):
         if(not any((legal_moves[:] == action).all(1))):
             return (self.board, self._player_to_action_space(self.current_player)), 0, False, False, {"error":"invalid action"}
        
+        start_count = 0
+        player_at_start_of_turn = self.current_player 
+        if(self.reward_style!="default"):
+            start_count = self.board[self.board==player_at_start_of_turn].size
         self._take_action(action)
         self.current_player = -self.current_player
         if len(self.get_legal_moves(return_as="list")) == 0:
@@ -275,11 +284,13 @@ class OthelloEnvironment(gym.Env):
                 self.winner = np.sign(gameSum)
             else:
                 self.winner = EMPTY_SPACE
-            reward = -1 if gameSum == 0 else np.sign(gameSum * self.player)
+            reward = 0.5 if gameSum == 0 else np.sign(gameSum * self.player)
             terminated = True
             info = {}
             self.is_game_over = True
-        
+        if(self.reward_style!="default"):
+            # print("math",start_count, self.board[self.board==player_at_start_of_turn].size)
+            reward = self.board[self.board==player_at_start_of_turn].size - start_count
         return (self.board, self._player_to_action_space(self.current_player)), reward, terminated, False, info
 
             

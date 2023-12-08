@@ -12,20 +12,19 @@ from environment.ReversiHelpers import DISK_BLACK, DISK_WHITE, OthelloEnvironmen
 def getPlayers():
     try:
         return {
-            "testset": DQN_Player('testsetstset'),
-            "dqn": DQN_Player('dqn'),
-            "dqn-rs": DQN_Player('dqn-rs'),
-            "dqn-selfplay": DQN_Player('dqn-selfplay'),
-            "dqn-rs-selfplay": DQN_Player('dqn-rs-selfplay'),
-            "dqn2": DQN2_Player('dqn2'),
-            "dqn2-rs": DQN2_Player('dqn2-rs'),
-            "dqn2-selfplay": DQN2_Player('dqn2-selfplay'),
-            "dqn2-rs-selfplay": DQN2_Player('dqn2-rs-selfplay'),
+            "dqn": DQN_Player('model.dqn'),
+            "dqn-rs": DQN_Player('model.dqn-rs'),
+            "dqn-selfplay": DQN_Player('model.dqn-selfplay'),
+            "dqn-rs-selfplay": DQN_Player('model.dqn-rs-selfplay'),
+            "dqn2": DQN2_Player('model.dqn2'),
+            "dqn2-rs": DQN2_Player('model.dqn2-rs'),
+            "dqn2-selfplay": DQN2_Player('model.dqn2-selfplay'),
+            "dqn2-rs-selfplay": DQN2_Player('model.dqn2-rs-selfplay'),
             "random": RandomPlayer(),
             "human": HumanPlayer()
         }
     except OSError:
-        raise "Did you export the models from Model into the root directory?"
+        raise "Did you export the models from models.zip into the root directory?"
 
 
 parser = argparse.ArgumentParser(

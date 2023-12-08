@@ -9,7 +9,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-
 def flatten_state_action_pair(state: tuple[np.ndarray, int], action: np.ndarray):
     return np.concatenate((
         np.array([state[1]]),
@@ -71,6 +70,7 @@ def run_game(model: tf.keras.Model, env: OthelloEnvironment, epsilon=0.05):
     print("Game Timer", time.time() - game_time)
     return memory
 
+
 def get_q_sa(model: tf.keras.Model, state, legal_actions: List[tuple[int, int]]):
     state_action_pairs = list(map(
         lambda action:
@@ -81,6 +81,7 @@ def get_q_sa(model: tf.keras.Model, state, legal_actions: List[tuple[int, int]])
         [np.array(state_action_pairs)], verbose=0)
     return legal_actions_q_values
 
+
 def epsilon_greedy(model: tf.keras.Model, epsilon: float, state, legal_actions: List[tuple[int, int]]):
     if (random.random() > epsilon):
         legal_actions_q_values = get_q_sa(model, state, legal_actions)
@@ -89,6 +90,7 @@ def epsilon_greedy(model: tf.keras.Model, epsilon: float, state, legal_actions: 
         best_action = legal_actions[np.random.randint(
             0, len(legal_actions))]
     return best_action
+
 
 def do_step(env: OthelloEnvironment, action):
     new_state, reward, terminated, _, info = env.step(action)
@@ -100,8 +102,10 @@ def do_step(env: OthelloEnvironment, action):
 
     return new_state, reward, terminated, legal_actions
 
+
 def fit_sars(env, model, sars_list, gamma):
-    state_actions = np.array(list(map(lambda x: flatten_state_action_pair(x[0],x[1]), sars_list)))
+    state_actions = np.array(
+        list(map(lambda x: flatten_state_action_pair(x[0], x[1]), sars_list)))
     q_sa_updated = []
     for sars in sars_list:
         _, _, reward, next_state = sars
@@ -118,11 +122,14 @@ def fit_sars(env, model, sars_list, gamma):
                 q_sa_updated.append(reward + gamma * q_sa_next)
     model.fit(state_actions, np.array(q_sa_updated))
 
-def learn_each_timestep(env: OthelloEnvironment, model: tf.keras.Model, episodes=20, gamma=0.1, num_replay=100, epsilon=0.1,selfplay=True, pbrs=False):
+
+def learn_each_timestep(env: OthelloEnvironment, model: tf.keras.Model, episodes=20, gamma=0.1, num_replay=100, epsilon=0.1, end_epsilon=0, selfplay=True, reward_shaping=False):
     sars = deque(maxlen=num_replay)
     old_model = model
+    start_epsilon = epsilon
     for episode in range(episodes):
 
+        epsilon = epsilon - (episode/episodes) * (start_epsilon-end_epsilon)
         print("Performing Game step:", episode, "Player", "Black" if env.player ==
               DISK_BLACK else "White", end=' | ')
 
@@ -137,7 +144,7 @@ def learn_each_timestep(env: OthelloEnvironment, model: tf.keras.Model, episodes
         legal_actions = env.get_legal_moves(return_as="list")
 
         current_sars = [None, None, None, None]
-        t=0
+        t = 0
         while (terminated != True):
 
             # Each player picks action
@@ -150,14 +157,9 @@ def learn_each_timestep(env: OthelloEnvironment, model: tf.keras.Model, episodes
                     env, action)
 
                 current_sars[2] = reward
-                if pbrs:
-                    # old_state = current_sars[0]
-                    # print(new_state)
-                    if terminated:
-                        current_sars[2] = current_sars[2] * 100
-                    else:
-                        current_sars[2] = np.abs(np.sum(new_state[0][new_state[0]==env.player])) 
-                    # print(np.abs(np.sum(old_state[0][old_state[0]==env.player])) )
+                if reward_shaping:
+                    current_sars[2] += np.abs(np.sum(new_state[0]
+                                              [new_state[0] == env.player])) / 64
 
                 if env.player == env.current_player:
                     current_sars[3] = new_state
@@ -174,10 +176,10 @@ def learn_each_timestep(env: OthelloEnvironment, model: tf.keras.Model, episodes
                 # For per step modelling
                 # fit_sars(model, [current_sars], gamma)
                 sars.append(current_sars)
-                current_sars = [None,None,None,None]
+                current_sars = [None, None, None, None]
 
             state = new_state
-            t+=1
+            t += 1
         winner = env.get_winner()
         print("Winner:", "Black" if winner ==
               DISK_BLACK else "White" if winner == DISK_WHITE else "Draw")
@@ -188,6 +190,7 @@ def learn_each_timestep(env: OthelloEnvironment, model: tf.keras.Model, episodes
               str(time.time() - episode_time) + "\' seconds")
         old_model = model
     return
+
 
 def validate_against_random(env: OthelloEnvironment, model: tf.keras.Model, episodes=50):
     scores = []

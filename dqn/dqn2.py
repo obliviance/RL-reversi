@@ -124,6 +124,7 @@ def learn_each_timestep(env: OthelloEnvironment, model: tf.keras.Model, episodes
         prev_state = None
         prev_action = None
         reward = None
+        t = 0
         while not (terminated or truncated):
             if env.player == env.current_player:
                 best_action = legal_actions[random.randint(

@@ -22,7 +22,7 @@ def getPlayers():
             "dqn2-selfplay": DQN2_Player('model.dqn2-selfplay'),
             "dqn2-rs-selfplay": DQN2_Player('model.dqn2-rs-selfplay'),
             "dsqn": DSQN_Player('model.dsqn'),
-            "dsqn-selfplay": DSQN_Player('model.dsqn-selfplay'),
+            "dsqn-selfplay": DSQN_Player('model.dsqn_selfplay'),
             "random": RandomPlayer(),
             "human": HumanPlayer()
         }
@@ -82,8 +82,7 @@ if __name__ == "__main__":
         if verbosity > 1:
             print(f"Black Player is {colors[DISK_BLACK][1]}")
             print(f"White Player is {colors[DISK_WHITE][1]}")
-        else:
-            round_start = time.time()
+        round_start = time.time()
 
         terminated = False
         legal_actions = env.get_legal_moves(return_as='List')

@@ -6,20 +6,23 @@ from comparison.HumanPlayer import HumanPlayer
 from comparison.PolicyPlayer import PolicyPlayer
 from comparison.RandomPlayer import RandomPlayer
 from comparison.DQN_Player import DQN2_Player, DQN_Player
+from comparison.DSQN_Player import DSQN_Player
 from environment.ReversiHelpers import DISK_BLACK, DISK_WHITE, OthelloEnvironment
 
 
 def getPlayers():
     try:
         return {
-            "dqn": DQN_Player('model.dqn'),
-            "dqn-rs": DQN_Player('model.dqn-rs'),
-            "dqn-selfplay": DQN_Player('model.dqn-selfplay'),
-            "dqn-rs-selfplay": DQN_Player('model.dqn-rs-selfplay'),
+            "dqn1": DQN_Player('model.dqn1'),
+            "dqn1-rs": DQN_Player('model.dqn1-rs'),
+            "dqn1-selfplay": DQN_Player('model.dqn1-selfplay'),
+            "dqn1-rs-selfplay": DQN_Player('model.dqn1-rs-selfplay'),
             "dqn2": DQN2_Player('model.dqn2'),
             "dqn2-rs": DQN2_Player('model.dqn2-rs'),
             "dqn2-selfplay": DQN2_Player('model.dqn2-selfplay'),
             "dqn2-rs-selfplay": DQN2_Player('model.dqn2-rs-selfplay'),
+            "dsqn": DSQN_Player('model.dsqn'),
+            "dsqn-selfplay": DSQN_Player('model.dsqn-selfplay'),
             "random": RandomPlayer(),
             "human": HumanPlayer()
         }

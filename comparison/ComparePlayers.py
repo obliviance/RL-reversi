@@ -5,6 +5,7 @@ import time
 from comparison.HumanPlayer import HumanPlayer
 from comparison.PolicyPlayer import PolicyPlayer
 from comparison.RandomPlayer import RandomPlayer
+from comparison.MCTS_Player import MCTSPlayer
 from comparison.DQN_Player import DQN2_Player, DQN_Player
 from environment.ReversiHelpers import DISK_BLACK, DISK_WHITE, OthelloEnvironment
 
@@ -17,7 +18,8 @@ def getPlayers():
         "dqn2_pbrs_no_selfplay": DQN2_Player('dqn2_pbrs_no_selfplay'),
         "dqn2_pbrs_selfplay": DQN2_Player('dqn2_pbrs_selfplay'),
         "random": RandomPlayer(),
-        "human": HumanPlayer()
+        "human": HumanPlayer(),
+        "mcts":MCTSPlayer()
     }
 
 

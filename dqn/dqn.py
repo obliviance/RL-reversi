@@ -8,7 +8,6 @@ import matplotlib.pyplot as plt
 
 import numpy as np
 
-
 def flatten_state_action_pair(state: tuple[np.ndarray, int], action: np.ndarray):
     return np.concatenate((
         np.array([state[1]]),
@@ -120,13 +119,14 @@ def fit_sars(env, model, sars_list, gamma):
             else:
                 q_sa_next = np.max(get_q_sa(model, next_state, legal_moves))
                 q_sa_updated.append(reward + gamma * q_sa_next)
-    model.fit(state_actions, np.array(q_sa_updated))
+    return model.fit(state_actions, np.array(q_sa_updated))
 
 
 def learn_each_timestep(env: OthelloEnvironment, model: tf.keras.Model, episodes=20, gamma=0.1, num_replay=100, epsilon=0.1, end_epsilon=0, selfplay=True, reward_shaping=False):
     sars = deque(maxlen=num_replay)
     old_model = model
     start_epsilon = epsilon
+    last_loss = float('inf')
     for episode in range(episodes):
 
         epsilon = epsilon - (episode/episodes) * (start_epsilon-end_epsilon)
@@ -137,8 +137,8 @@ def learn_each_timestep(env: OthelloEnvironment, model: tf.keras.Model, episodes
 
         state = env.reset()
 
-        env.player = DISK_BLACK if random.randint(0, 1) == 1 else DISK_WHITE
-
+        env.player = DISK_BLACK if episode % 2 == 1 else DISK_WHITE
+        
         terminated = False
 
         legal_actions = env.get_legal_moves(return_as="list")
@@ -149,20 +149,17 @@ def learn_each_timestep(env: OthelloEnvironment, model: tf.keras.Model, episodes
 
             # Each player picks action
             if env.player == env.current_player:
-                action = epsilon_greedy(model, epsilon, state, legal_actions)
-                current_sars[0] = state
+                if current_sars[0] is not None:
+                    action = epsilon_greedy(model, epsilon, state, legal_actions)
+                else:
+                    action = epsilon_greedy(model, 1, state, legal_actions)
+                current_sars[0] = (state[0].copy(), state[1])
                 current_sars[1] = action
-
                 new_state, reward, terminated, legal_actions = do_step(
                     env, action)
 
                 current_sars[2] = reward
-                if reward_shaping:
-                    current_sars[2] += np.abs(np.sum(new_state[0]
-                                              [new_state[0] == env.player])) / 64
 
-                if env.player == env.current_player:
-                    current_sars[3] = new_state
 
             else:
                 action = epsilon_greedy(
@@ -172,11 +169,18 @@ def learn_each_timestep(env: OthelloEnvironment, model: tf.keras.Model, episodes
                 if current_sars[0] is not None and env.player == env.current_player:
                     current_sars[3] = new_state
 
-            if terminated or (not terminated and current_sars[3]) is not None:
-                # For per step modelling
-                # fit_sars(model, [current_sars], gamma)
+            if env.player == env.current_player and current_sars[0] is not None:
+                current_sars[3] = new_state
+                if reward_shaping:
+                    current_sars[2] += gamma * np.abs(
+                        np.sum(state[0][state[0] == env.player]))/64
                 sars.append(current_sars)
-                current_sars = [None, None, None, None]
+            if terminated:
+                if reward_shaping:
+                    current_sars[2] += gamma * np.abs(
+                        np.sum(state[0][state[0] == env.player]))/64
+                current_sars[3] = None
+                sars.append(current_sars)
 
             state = new_state
             t += 1
@@ -185,10 +189,12 @@ def learn_each_timestep(env: OthelloEnvironment, model: tf.keras.Model, episodes
               DISK_BLACK else "White" if winner == DISK_WHITE else "Draw")
 
         if (len(sars) != 0):
-            fit_sars(env, model, sars, gamma)
+            history = fit_sars(env, model, sars, gamma)
         print("Episode completed in \'" +
               str(time.time() - episode_time) + "\' seconds")
-        old_model = model
+        
+        if episode % 5 == 0:
+            old_model = tf.keras.models.clone_model(model)
     return
 
 

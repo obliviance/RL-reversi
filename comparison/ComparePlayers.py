@@ -13,10 +13,10 @@ from environment.ReversiHelpers import DISK_BLACK, DISK_WHITE, OthelloEnvironmen
 def getPlayers():
     try:
         return {
-            "dqn": DQN_Player('model.dqn'),
-            "dqn-rs": DQN_Player('model.dqn-rs'),
-            "dqn-selfplay": DQN_Player('model.dqn-selfplay'),
-            "dqn-rs-selfplay": DQN_Player('model.dqn-rs-selfplay'),
+            "dqn1": DQN_Player('model.dqn1'),
+            "dqn1-rs": DQN_Player('model.dqn1-rs'),
+            "dqn1-selfplay": DQN_Player('model.dqn1-selfplay'),
+            "dqn1-rs-selfplay": DQN_Player('model.dqn1-rs-selfplay'),
             "dqn2": DQN2_Player('model.dqn2'),
             "dqn2-rs": DQN2_Player('model.dqn2-rs'),
             "dqn2-selfplay": DQN2_Player('model.dqn2-selfplay'),

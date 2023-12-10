@@ -1,3 +1,5 @@
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 from environment.ReversiHelpers import DISK_BLACK, DISK_WHITE, OthelloEnvironment
 from collections import deque
 import random
@@ -5,9 +7,7 @@ import time
 from typing import List
 import tensorflow as tf
 import matplotlib.pyplot as plt
-
 import numpy as np
-
 
 def flatten_state_action_pair(state: tuple[np.ndarray, int], action: np.ndarray):
     return np.concatenate((
@@ -116,22 +116,15 @@ def learn_each_timestep(env: OthelloEnvironment, model: tf.keras.Model, episodes
 
         state = env.reset()
 
-        env.player = DISK_BLACK if random.randint(0, 1) == 1 else DISK_WHITE
+        env.player = DISK_BLACK if episode % 2 == 1 else DISK_WHITE
 
         terminated = truncated = False
 
         legal_actions = env.get_legal_moves(return_as="list")
-
-        current_sars = [None, None, None, None]
-        t = 0
-        action_ratios = {
-            "policy": 0,
-            "random": 0
-        }
-
         prev_state = None
         prev_action = None
         reward = None
+        t = 0
         while not (terminated or truncated):
             if env.player == env.current_player:
                 best_action = legal_actions[random.randint(
@@ -142,18 +135,13 @@ def learn_each_timestep(env: OthelloEnvironment, model: tf.keras.Model, episodes
                         q_vals = pred[0][legal_actions[:, 0], legal_actions[:, 1]]
                         best_action = legal_actions[np.argmax(q_vals)]
               
-                prev_state = state
+                prev_state = (state[0].copy(), state[1])
                 prev_action = best_action
                 action = best_action
 
                 state, reward, terminated, truncated, legal_actions = do_step(
                     env, action)
                 
-                if reward_shaping:
-                    reward += np.abs(
-                        np.sum(state[0][state[0] == env.player]))/64
-                
-                sars.append([prev_state, prev_action, reward, state])
             else:
                 if selfplay:
                     pred = old_model.predict(np.array([flatten_state(state)]),verbose=0)
@@ -163,8 +151,17 @@ def learn_each_timestep(env: OthelloEnvironment, model: tf.keras.Model, episodes
                     action = legal_actions[random.randint(0, len(legal_actions)-1)]
                 state, reward, terminated, truncated, legal_actions = do_step(
                     env, action)
-                if terminated or truncated and prev_state is not None:
-                    sars.append([prev_state, prev_action, reward, state])
+            
+            if env.player==env.current_player and prev_state is not None:
+                if reward_shaping:
+                    reward += gamma * np.abs(
+                        np.sum(state[0][state[0] == env.player]))/64
+                sars.append([prev_state, prev_action, reward, state])
+            if terminated or truncated:
+                if reward_shaping:
+                    reward += gamma * np.abs(
+                        np.sum(state[0][state[0] == env.player]))/64
+                sars.append([prev_state, prev_action, reward, None])
             t += 1
 
         winner = env.get_winner()
@@ -178,7 +175,8 @@ def learn_each_timestep(env: OthelloEnvironment, model: tf.keras.Model, episodes
             fit_sars(env, model, sars, gamma, verbose=2)
         print("Episode completed in \'" +
               str(time.time() - episode_time) + "\' seconds")
-        old_model = model
+        if episode % 5 == 0:
+            old_model = tf.keras.models.clone_model(model)
     return
 
 

@@ -77,7 +77,7 @@ We note that Q-learning is often performed using a Q-table of some sort. However
 Literature on Deep Q-learning have been shown to implement this in several ways. Notably, for discrete action spaces, it is common such as in \cite{ree13} to use a neural network with simply a state as input, and all resulting Q-values for that state and all possible actions (\ref{fig:nn535}). Others use a neural network with a state-action pair as input, and only the resulting Q-values for output \ref{fig:nn531} as seen in \cite{ank13}. 
 
 
-\subsection{Deep Q-Learning and Reversi/Othello}
+\subsection{Deep Q-Learning and Reversi}
 We aim to implement Deep Q-learning within the game space using several methods. Firstly, we intend to use both types of neural networks described in section \ref{sec:q-approx}. With Q-learning being an off-policy learning approach, we are able to use an experience replay buffer such that past state-action pairs and their resulting state and rewards can be used as another way to train the agent. We further intend to use self-play, a method that uses a previous version of the current model being trained as the opponent policy. Finally, we also intend to explore the feasiblity of using reward shaping.
 
 \paragraph{Experience Replay}
@@ -111,6 +111,30 @@ The hyperparameters used for all models was,
     \item $\epsilon=0.2$ Decaying linearly to $\epsilon=0$ at the final episode
     \item A replay buffer of size 4096
     \item Iteration of learning until no significant improvement in learning has occured for 10 episodes.
+\end{itemize}
+
+\subsection{Deep Reinforcement Learning with Experience Replay Based on SARSA (Deep SARSA) and Reversi}
+Deep SARSA (State-Action-Reward-State-Action) is a reinforcement learning algorithm that extends the SARSA algorithm by incorporating deep neural networks. Inspired by the application of this algorithm to solve video games control problem as in \cite{7849837}, we aim to implement this algorithm to learn an optimal policy to play Reversi game.
+
+\paragraph{SARSA}
+SARSA is an on-policy reinforcement learning algorithm that updates its Q-values (action values) based on the current policy. The Q-values represent the expected cumulative rewards for taking a particular action in a specific state.
+
+\paragraph{Deep SARSA}
+In Deep SARSA, the Q-values are estimated using a deep neural network. This allows the algorithm to handle high-dimensional state spaces like the board configuration in Reversi.The neural network takes the current state as input and outputs Q-values for all possible actions. We use the same netwrok as Network 1 used in Deep Q-Learning implementation mentioned above.
+
+\paragraph{Experience Replay}
+Deep SARSA uses experience replay to improve sample efficiency and stability. It stores experiences (state, action, reward, next state) in a replay buffer and samples random batches during training using different sampling methods such as consecutive sampling, uniform sampling, and weighted sampling method by rewards \cite{7849837}. We use uniform sampling method in this implementation.
+
+\paragraph{Self-Play}
+With self-play, an agent will play against the same, but earlier iteration of the current model one during training, which has been shown, such as in \citet{ree13} which has been shown to be beneficial.
+
+The hyperparameters used for all models was,
+\begin{itemize}
+    \item $\gamma=0.1$
+    \item $\epsilon=0.1$
+    \item A replay buffer of size 256
+    \item Sample 64 experiences uniformly random for experience replay
+    \item Iteration of learning over 100 episodes
 \end{itemize}
 
 \paragraph{Experiments}

@@ -99,5 +99,22 @@ Some other important conclusions we can draw is the fact that all reward-shaping
 
 We can observere from the table (Table \ref{table:dsqn}) that dsqn is as performant as random player while dsqn-selfplay performs better than random player. Furthermore, It can be seen from the table (Table \ref{table:dsqn}) that dsqn and dsqn-selfplay permorm as good as dqn2. Moreover, dsqn and dsqn-selfplay play draw against each other.
 
+\subsection{Monte Carlo Tree Search}
+The MCTS agent in the following table is the same agent with different simulation paramaters, MCTS 5 will do 5 game simulations per turn, and MCTS 10 will do 10 simulations.
+\begin{table}[!htbp]
+    \centering
+    \caption{MCTS Agent Performance after 20 games.}\label{table:MCTS}
+    \begin{tabular}{lccccccc}
+        \toprule
+        Player 1 VS Player 2            & Player 1 win & Draws & Player 2 loss & Win Rate & Non-Loss Rate & Non-Win Rate \\
+        \midrule
+        MCTS 5 VS random                  & 12    & 1    & 7      & 0.6        & 0.65             & 0.4            \\
+        MCTS 10 VS random         & 31   & 2     & 17     & 0.62     & 0.66          & 0.38         \\
+       \bottomrule
+    \end{tabular}
+\end{table}
+
+Due to time constraints and slow performance, the MCTS could only be tested against the random agent for 20 games per run. The data collected does show, however that the MCTS is better than the Random agent, and.
+
 \end{document}
 

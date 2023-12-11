@@ -14,13 +14,9 @@ class Node:
 
         self._visits = 0
         self._children = []
-        self._child_values = None
-        self._child_visits = None
 
         self._state = state
         self._valid_moves = valid_moves
-        self._valid_moves_indices = None
-        self._p_v = None
 
         self._simulated = 0
         self._wins = 0
@@ -44,14 +40,6 @@ class Node:
     @property
     def children(self):
         return self._children
-
-    @property
-    def child_values(self):
-        return self._child_values
-
-    @property
-    def child_visits(self):
-        return self._child_visits
     
     @property
     def state(self):
@@ -77,10 +65,13 @@ class Node:
         self._simulated += 1
         if (reward == 1):
             self._wins += 1
+
     def set_parent(self, node):
         self._parent = node
+
     def set_parent_action(self, action):
         self._parent_action = action
+        
     def set_opponent_action(self, action):
         self._opponent_action = action
 
@@ -262,35 +253,6 @@ def rollout(node, env):
         if (terminated):
             backpropagate(node, reward)
         state = new_state
-
-
-#def learn_each_timestep(env, episodes, gamma, epsilon):
-#    tree_search = MCTS()
-#    for e in episodes:
-#        state = env.reset()
-#        env.player = DISK_BLACK if random.randint(0, 1) == 1 else DISK_WHITE
-#        print("Game", e, "Player", "Black" if env.player ==
-#              DISK_BLACK else "White", end=' ')
-#        terminated = False
-#        legal_actions = env.get_legal_moves(return_as="list")
-#        game_time = time.time()
-#        while (terminated != True):
-#            if env.current_player == env.player:
-#                #select best action
-#                board, player = state
-#                best_action = tree_search.mcts(env, state, legal_actions)
-#            else:
-#                best_action = legal_actions[np.random.choice(
-#                    len(legal_actions), 1)][0]
-#            new_state, reward, terminated, _, info = env.step(best_action)
-#            if ('error' in info):
-#                raise info['error']
-#            if ('legal_moves' in info):
-#                legal_actions = info['legal_moves']
-#            if (terminated):
-#                print("Score", reward)
-#                #backpropagate???
-#            state = new_state
         
 
 
@@ -304,6 +266,7 @@ def validate_against_random(tree_search, env, episodes=50):
         terminated = False
         legal_actions = env.get_legal_moves(return_as="list")
         game_time = time.time()
+        tree_search._prev_root = None
         while (terminated != True):
             if env.current_player == env.player:
                 #select best action

@@ -30,7 +30,11 @@ In an ideal setting, the Q-function, denoted $Q(s,a)$, measures the cumulative f
 \end{equation}
 
 \paragraph{Value-Function}
-In an ideal setting, the Value-function, denoted $V(s)$, measures the longperfectly estimates the best the cumulative future reward of the current state-action pair. Thus, it reasons that the optimal policy that uses Q-learning is the policy,
+In an ideal setting, the Value-function, denoted $V(s)$, measures the cumulative future reward of the current state. Thus, it reasons that the optimal policy chosses an action according to:
+
+\begin{equation}\label{eq:value}
+    V(s)=\max\limits_{a}(\sum_{s, a} p(s', r | s, a)[r + \gamma V(s')] )
+\end{equation}
 
 \paragraph{Reward-Shaping}
 Additionally, in environments with sparse rewards, it may be necessary to introduce an additional hand-crafted reward to the current reward. If the reward from one state following an action to another is given by $R(s,a,s')$ then a shaped reward will be given by, $R'(s,a,s') = R'(s,a,s') + F(s,a,s')$ following some shaping function $F$.  
@@ -135,4 +139,27 @@ The hyperparameters used for all models was,
 
 \paragraph{Experiments}
 We aim to find out the optimal Deep Q-network through a set of experiments. That is, we wish to find the highest performing network that has generalized the best. In both \citet{ree13} and \citet{VANECK20081999}, a dueling like structure was used to test all networks involved. We similarily follow this approach and extend it to a tournament structure. That is, we first find the highest performing networks against a random policy opponent, and then rank them each against one another.
+
+\subsection{Monte Carlo Tree Search and Reversi/Othello}
+We aim to implement a Monte Carlo Tree Search that explores the Game Tree of Reversi. The Monte Carlo Tree search method uses four fundamental steps, Selection, Rollout, Expansion and Backpropagation that we will describe below. The MCTS will repeat traversal, which is made up of these four steps, an amount specified by the parameter $n_iter$ every time the MCTS must select an action during play.
+
+\paragraph{Selection}
+The selection portion of the Monte Carlo Tree Search determines the expansion or rollout of a node, $N$ with children, $C$. Specifically, the node is only expanded or rolled out if $|C| = 0$. In the case that $N$ has children, the algorithm will check the child with the highest $UCT$ score, $c$ with children, $C'$. Selection on $c$ occurs similarily, if $|c'| = 0$, and selects the child, $c'$ with the highest $UCT$ score.
+
+\paragraph{Rollout}
+Rollout is the fundamental part that seperates the Monte Carlo Tree Search from other tree searches like $Minimax$. Rollout will simulate a game between two random agents until the game ends and then use Backpropegation for the results of the game.
+
+\paragraph{Expansion}
+The Expansion algorithm expands a node, $N$ by generating child nodes $C$ and adding them as the children of $N$. The node is expanded using each action, $a$ from the list of it's legal actions, $A$. $C$ is made up of states that occur after an action $a$ has occured and after an opponent response $o$ of the list of legal responses, $O$ has been selected. Thus, after expansion, $|C| = \sum_{A}|(O | a)|$.
+
+\paragraph{Backpropegation}
+Backpropegation is the simplest step of the Monte Carlo Tree Search. At the end of a rollout, the game is scored, and the reward, which is +1 for a win, 0.5 for a draw, and -1 for a loss, is backpropegated through all parents of the node that was rolled out. In our implementation, the reward is saved in terms of $n_w$ and $n_s$ in $N$, these variables are used to determine the win rate of $N$. 
+
+\paragraph{UCT score}
+The UCT score, as mentioned in Selection is the score that determines the priority of expansion or rollout when choosing $c$ from $C$. the equation is as follows:
+\begin{equation}\label{eq:uct}
+    UCT=w/n + c \sqrt{\ln{t}/n}
+\end{equation}
+with $w = n_w, n = n_s$ for $N$, $c = 2$ for our implementation, and $t$ as $\sum_{n_wins}(N)$ for all $N$
+
 \end{document}

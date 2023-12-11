@@ -46,7 +46,7 @@ if __name__ == "__main__":
     p1_type = args.p1
     p2_type = args.p2
 
-    if (p1_type == "mcts") or (p2_type == "mcts") and (args.human_render):
+    if ((p1_type == "mcts") or (p2_type == "mcts")) and (args.human_render):
             raise "error: MCTS cannot play against human"
 
     view = "human" if args.human_render else None

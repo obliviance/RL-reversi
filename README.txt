@@ -7,6 +7,8 @@ Installation.
     run `pip install -r requirements`
 
 Compare Players.
+    WARNING - EXTRACT model.zip INTO ROOT FOLDER BEFORE COMPARING
+
     run `python -m comparison.ComparePlayers`
     usage: ComparePlayers [-h] [--games GAMES] [--verbosity {0,1,2}] [--human-render] p1 p2
 

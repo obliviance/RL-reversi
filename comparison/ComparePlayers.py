@@ -12,18 +12,24 @@ from environment.ReversiHelpers import DISK_BLACK, DISK_WHITE, OthelloEnvironmen
 
 
 def getPlayers():
-    return {
-        "dqn_selfplay": DQN_Player('model.dqn-selfplay'),
-        "dqn": DQN_Player('model.dqn-random'),
-        "dqn2": DQN2_Player('dqn2'),
-        "dqn2_selfplay": DQN2_Player('dqn2_selfplay'),
-        "dqn2_pbrs_no_selfplay": DQN2_Player('dqn2_pbrs_no_selfplay'),
-        "dqn2_pbrs_selfplay": DQN2_Player('dqn2_pbrs_selfplay'),
-        "random": RandomPlayer(),
-        "human": HumanPlayer(),
-        "mcts":MCTSPlayer()
-    }
-
+    try:
+        return {
+            "dqn1": DQN_Player('model.dqn1'),
+            "dqn1-rs": DQN_Player('model.dqn1-rs'),
+            "dqn1-selfplay": DQN_Player('model.dqn1-selfplay'),
+            "dqn1-rs-selfplay": DQN_Player('model.dqn1-rs-selfplay'),
+            "dqn2": DQN2_Player('model.dqn2'),
+            "dqn2-rs": DQN2_Player('model.dqn2-rs'),
+            "dqn2-selfplay": DQN2_Player('model.dqn2-selfplay'),
+            "dqn2-rs-selfplay": DQN2_Player('model.dqn2-rs-selfplay'),
+            "dsqn": DSQN_Player('model.dsqn'),
+            "dsqn-selfplay": DSQN_Player('model.dsqn_selfplay'),
+            "random": RandomPlayer(),
+            "human": HumanPlayer(),
+            "mcts":MCTSPlayer()
+        }
+    except OSError:
+        raise "Did you export the models from models.zip into the root directory?"
 
 parser = argparse.ArgumentParser(
     prog='ComparePlayers',
@@ -40,9 +46,8 @@ if __name__ == "__main__":
     p1_type = args.p1
     p2_type = args.p2
 
-    if (p1_type == "mcts") | (p2_type == "mcts"):
-        if (p1_type == "human") | (p2_type == "human"):
-            raise "error: MCTS cannot play agains human"
+    if (p1_type == "mcts") or (p2_type == "mcts") and (args.human_render):
+            raise "error: MCTS cannot play against human"
 
     view = "human" if args.human_render else None
     verbosity = args.verbosity

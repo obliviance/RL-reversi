@@ -38,6 +38,10 @@ if __name__ == "__main__":
     p1_type = args.p1
     p2_type = args.p2
 
+    if (p1_type == "mcts") | (p2_type == "mcts"):
+        if (p1_type == "human") | (p2_type == "human"):
+            raise "error: MCTS cannot play agains human"
+
     view = "human" if args.human_render else None
     quiet = args.quiet
 

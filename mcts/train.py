@@ -1,5 +1,3 @@
-import sys
-sys.path.insert(0, "C:\\Users\\Cameron\\Documents\\COMP4900\\RL-reversi")
 import argparse
 import pickle
 from matplotlib import pyplot as plt

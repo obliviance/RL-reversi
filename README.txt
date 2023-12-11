@@ -33,6 +33,7 @@ Compare Players.
         dqn2-rs-selfplay
         dsqn
         dsqn-selfplay
+        mcts
         random
         human
 
@@ -63,3 +64,14 @@ Train DQN
                             OUT:(Q(State,Action))]
     --evaluate EVALUATE   Number of evaluation episodes. Default=50
 
+Train MCTS
+    run `python -m mcts.train <model_name>`
+    usage: train [-h] [--evaluate EVALUATE] model_name
+
+    Trains a MonteCarlo
+
+    positional arguments:
+    model_name
+
+    options:
+    --evaluate EVALUATE

@@ -79,6 +79,25 @@ We observe that the dqn2 agent (Table \ref{table:dqns-v-dqn2}) is more performan
 
 Some other important conclusions we can draw is the fact that all reward-shaping agents performed worse against random (Table \ref{table:dqns-v-random}). Notably, dqn1-rs performed better against both dqn1 and dqn2 agents, in fact denying any wins for dqn2, and performing similarily to dqn1. Selfplay agents performed at best equal against random policy (Table \ref{table:dqns-v-random}) as well as dqn1 (Table \ref{table:dqns-v-dqn1}) and dqn2 (Table \ref{table:dqns-v-dqn2}). Notably, dqn1-rs-selfplay outperformed dqn1 with a higher win rate.
 
+\subsection{Deep SARSA (DSQN)}
+
+\begin{table}[!htbp]
+    \centering
+    \caption{DSQN Agent Performance after 50 games.}\label{table:dsqn}
+    \begin{tabular}{lccccccc}
+        \toprule
+        Player 1 VS Player 2            & Player 1 win & Draws & Player 2 loss & Win Rate & Non-Loss Rate & Non-Win Rate \\
+        \midrule
+        dsqn VS random                  & 25    & 0    & 25      & 0.5        & 0.5             & 0.5            \\
+        dsqn-selfplay VS random         & 31   & 2     & 17     & 0.62     & 0.66          & 0.38         \\
+        dsqn VS dsqn-selfplay           & 0   & 0     & 50     & 0     & 0         & 1         \\
+        dsqn VS dqn2                    & 27  & 0     & 23     & 0.54     & 0.54          & 0.46         \\
+        dsqn-selfplay VS dqn2           & 28   & 0     & 22     & 0.56      & 0.56           & 0.44          \\
+       \bottomrule
+    \end{tabular}
+\end{table}
+
+It can be seen fronm the table (Table \ref{table:dsqn}) that dsqn permorms as good as dqn2.
 
 \end{document}
 

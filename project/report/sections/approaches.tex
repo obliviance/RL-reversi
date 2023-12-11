@@ -109,6 +109,30 @@ The hyperparameters used for all models was,
     \item Iteration of learning until no significant improvement in learning has occured for 10 episodes.
 \end{itemize}
 
+\subsection{Deep Reinforcement Learning with Experience Replay Based on SARSA (Deep SARSA) and Reversi/Othello}
+Deep SARSA (State-Action-Reward-State-Action) is a reinforcement learning algorithm that extends the SARSA algorithm by incorporating deep neural networks. Inspired by the application of this algorithm to solve video games control problem as in \cite{7849837}, we aim to implement this algorithm to learn an optimal policy to play Reversi game.
+
+\paragraph{SARSA}
+SARSA is an on-policy reinforcement learning algorithm that updates its Q-values (action values) based on the current policy. The Q-values represent the expected cumulative rewards for taking a particular action in a specific state.
+
+\paragraph{Deep SARSA}
+In Deep SARSA, the Q-values are estimated using a deep neural network. This allows the algorithm to handle high-dimensional state spaces like the board configuration in Reversi.The neural network takes the current state as input and outputs Q-values for all possible actions. We use the same netwrok as Network 1 used in Deep Q-Learning implementation mentioned above.
+
+\paragraph{Experience Replay}
+Deep SARSA uses experience replay to improve sample efficiency and stability. It stores experiences (state, action, reward, next state) in a replay buffer and samples random batches during training using different sampling methods such as consecutive sampling, uniform sampling, and weighted sampling method by rewards \cite{7849837}. We use uniform sampling method in this implementation.
+
+\paragraph{Self-Play}
+With self-play, an agent will play against the same, but earlier iteration of the current model one during training, which has been shown, such as in \citet{ree13} which has been shown to be beneficial.
+
+The hyperparameters used for all models was,
+\begin{itemize}
+    \item $\gamma=0.1$
+    \item $\epsilon=0.1$
+    \item A replay buffer of size 256
+    \item Sample 64 experiences uniformly random for experience replay
+    \item Iteration of learning over 100 episodes
+\end{itemize}
+
 \paragraph{Experiments}
 We aim to find out the optimal Deep Q-network through a set of experiments. That is, we wish to find the highest performing network that has generalized the best. In both \citet{ree13} and \citet{VANECK20081999}, a dueling like structure was used to test all networks involved. We similarily follow this approach and extend it to a tournament structure. That is, we first find the highest performing networks against a random policy opponent, and then rank them each against one another.
 \end{document}

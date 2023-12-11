@@ -1,0 +1,103 @@
+\documentclass[../report.tex]{subfiles}
+\begin{document}
+
+\section{Experimental Results}
+We will outline the experimental results gathered from the various experiments and attempt to reach plausible conclusions.
+
+\subsection{Deep Q-Learning}
+The experiments were performed in a tournament style comparision, first comparing against a random policy player, then comparing against the best agents trained to assess performance further. All agents are identified by the following rules,
+\begin{itemize}
+    \item dqn1 denotes using network 1 topology
+    \item dqn2 denotes using network 2 topology
+    \item rs denotes using simple reward-shaping (\ref{eq:simple-reward-shaping})
+    \item selfplay denotes using selfplay during training.
+\end{itemize}
+Thus, for example, dqn2-rs-selfplay indicates using a network 2 topology, reward-shaping and selfplay, while dqn1-rs denotes a network 1 topology with reward shaping and no selfplay. Next, we define the metrics for the various experiments as Win Rate = $\frac{\text{\#Wins}}{\text{\#Games}}$, Non-Loss Rate = $\frac{\text{\#Wins + \#Draws}}{\text{\#Games}}$ and Non-Win Rate = $\frac{\text{\#Draws + \#Loss}}{\text{\#Games}}$
+
+
+\begin{table}[!htbp]
+    \centering
+    \caption{DQN Agent Performance after 50 games against Random Policy player.}\label{table:dqns-v-random}
+    \begin{tabular}{lccccccc}
+        \toprule
+        Agent            & Wins & Draws & Losses & Win Rate & Non-Loss Rate & Non-Win Rate \\
+        \midrule
+        dqn1             & 30   & 2     & 18     & 0.6      & 0.64          & 0.4          \\
+        dqn1-rs          & 19   & 3     & 28     & 0.38     & 0.44          & 0.62         \\
+        dqn1-selfplay    & 26   & 1     & 23     & 0.52     & 0.54          & 0.48         \\
+        dqn1-rs-selfplay & 25   & 1     & 24     & 0.5      & 0.52          & 0.5          \\
+        dqn2             & 32   & 12    & 6      & 0.64     & 0.88          & 0.36         \\
+        dqn2-rs          & 23   & 0     & 27     & 0.46     & 0.46          & 0.54         \\
+        dqn2-selfplay    & 26   & 2     & 22     & 0.52     & 0.56          & 0.48         \\
+        dqn2-rs-selfplay & 20   & 1     & 29     & 0.4      & 0.42          & 0.6          \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+Observe that the highest performing agent in Table \ref{table:dqns-v-random} is dqn2 with a win-rate of 0.64 and a non-loss rate of 0.88. We also observe that the highest performing agent of the first network is dqn1 with a win-rate of 0.6 and non-loss rate of 0.64. Next, we play these two agents against every other agent and observe the results.
+
+\begin{table}[!htbp]
+    \centering
+    \caption{DQN Agent Performance after 50 games against dqn2 player.}\label{table:dqns-v-dqn2}
+    \begin{tabular}{lccccccc}
+        \toprule
+        Agent            & Wins & Draws & Losses & Win Rate & Non-Loss Rate & Non-Win Rate \\
+        \midrule
+        dqn1              & 0    & 25    & 25     & 0        & 0.5           & 1            \\
+        dqn1-rs           & 26   & 24    & 0      & 0.52     & 1             & 0.48         \\
+        dqn1-selfplay     & 0    & 25    & 25     & 0        & 0.5           & 1            \\
+        dqn1-rs-selfplay  & 18   & 0     & 32     & 0.36     & 0.36          & 0.64         \\
+        dqn2             & 0    & 50    & 0      & 0        & 1             & 1            \\
+        dqn2-rs          & 0    & 22    & 28     & 0        & 0.44          & 1            \\
+        dqn2-selfplay    & 0    & 0     & 50     & 0        & 0             & 1            \\
+        dqn2-rs-selfplay & 0    & 0     & 50     & 0        & 0             & 1            \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\begin{table}[!htbp]
+    \centering
+    \caption{DQN Agent Performance after 50 games against dqn1 player.}\label{table:dqns-v-dqn1}
+    \begin{tabular}{lccccccc}
+        \toprule
+        Agent            & Wins & Draws & Losses & Win Rate & Non-Loss Rate & Non-Win Rate \\
+        \midrule
+        dqn1              & 0    & 50    & 0      & 0        & 1             & 1            \\
+        dqn1-rs           & 28   & 0     & 22     & 0.56     & 0.56          & 0.44         \\
+        dqn1-selfplay     & 19   & 0     & 31     & 0.38     & 0.38          & 0.62         \\
+        dqn1-rs-selfplay  & 34   & 0     & 16     & 0.68     & 0.68          & 0.32         \\
+        dqn2             & 25   & 0     & 25     & 0.5      & 0.5           & 0.5          \\
+        dqn2-rs          & 0    & 0     & 50     & 0        & 0             & 1            \\
+        dqn2-selfplay    & 28   & 0     & 22     & 0.56     & 0.56          & 0.44         \\
+        dqn2-rs-selfplay & 28   & 0     & 22     & 0.56     & 0.56          & 0.44         \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+
+We observe that the dqn2 agent (Table \ref{table:dqns-v-dqn2}) is more performant than the dqn player (Table \ref{table:dqns-v-dqn1}) against all other players. Verifiably, the total games won or drawn by the dqn2 player against all other plays is 210 Losses against dqn2 + 146 Draws = 356 Non-Losses, while for dqn1, there were 188 Losses against dqn1 + 50 Draws =  238 Non-Losses.This implies that the dqn2 player generalized better than the dqn agent, likely due to the fact that because of the network topology, the extended output of all actions caused undesirable actions to be suppressed at the same time as the desirable action being emphasized. 
+
+Some other important conclusions we can draw is the fact that all reward-shaping agents performed worse against random (Table \ref{table:dqns-v-random}). Notably, dqn1-rs performed better against both dqn1 and dqn2 agents, in fact denying any wins for dqn2, and performing similarily to dqn1. Selfplay agents performed at best equal against random policy (Table \ref{table:dqns-v-random}) as well as dqn1 (Table \ref{table:dqns-v-dqn1}) and dqn2 (Table \ref{table:dqns-v-dqn2}). Notably, dqn1-rs-selfplay outperformed dqn1 with a higher win rate.
+
+\subsection{Deep SARSA (DSQN)}
+
+\begin{table}[!htbp]
+    \centering
+    \caption{DSQN Agent Performance after 50 games.}\label{table:dsqn}
+    \begin{tabular}{lccccccc}
+        \toprule
+        Player 1 VS Player 2            & Player 1 win & Draws & Player 2 loss & Win Rate & Non-Loss Rate & Non-Win Rate \\
+        \midrule
+        dsqn VS random                  & 25    & 0    & 25      & 0.5        & 0.5             & 0.5            \\
+        dsqn-selfplay VS random         & 31   & 2     & 17     & 0.62     & 0.66          & 0.38         \\
+        dsqn VS dsqn-selfplay           & 0   & 0     & 50     & 0     & 0         & 1         \\
+        dsqn VS dqn2                    & 27  & 0     & 23     & 0.54     & 0.54          & 0.46         \\
+        dsqn-selfplay VS dqn2           & 28   & 0     & 22     & 0.56      & 0.56           & 0.44          \\
+       \bottomrule
+    \end{tabular}
+\end{table}
+
+We can observere from the table (Table \ref{table:dsqn}) that dsqn is as performant as random player while dsqn-selfplay performs better than random player. Furthermore, It can be seen from the table (Table \ref{table:dsqn}) that dsqn and dsqn-selfplay permorm as good as dqn2. Moreover, dsqn and dsqn-selfplay play draw against each other.
+
+\end{document}
+

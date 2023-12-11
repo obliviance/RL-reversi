@@ -7,7 +7,9 @@ from comparison.PolicyPlayer import PolicyPlayer
 from comparison.RandomPlayer import RandomPlayer
 from comparison.MCTS_Player import MCTSPlayer
 from comparison.DQN_Player import DQN2_Player, DQN_Player
+from comparison.DSQN_Player import DSQN_Player
 from environment.ReversiHelpers import DISK_BLACK, DISK_WHITE, OthelloEnvironment
+
 
 def getPlayers():
     return {
@@ -25,12 +27,12 @@ def getPlayers():
 
 parser = argparse.ArgumentParser(
     prog='ComparePlayers',
-    description='Compare players against eachother')
+    description='Compare players against one another')
 
 parser.add_argument('p1')
 parser.add_argument('p2')
 parser.add_argument('--games', type=int, default=1)
-parser.add_argument('--quiet', action='store_true')
+parser.add_argument('--verbosity', type=int, default=2, choices=[0, 1, 2])
 parser.add_argument('--human-render', action='store_true')
 
 if __name__ == "__main__":
@@ -43,7 +45,7 @@ if __name__ == "__main__":
             raise "error: MCTS cannot play agains human"
 
     view = "human" if args.human_render else None
-    quiet = args.quiet
+    verbosity = args.verbosity
 
     num_games = args.games
 
@@ -53,13 +55,14 @@ if __name__ == "__main__":
     if p1_type == p2_type:
         p1_type += '1'
         p2_type += '2'
-    scores ={
-        p1_type : 0,
-        p2_type : 0,
+    scores = {
+        p1_type: 0,
+        p2_type: 0,
         'draws': 0
     }
     game_start = time.time()
     for game in range(num_games):
+        
         env = OthelloEnvironment(
             render_mode=view if view is not None else None)
         state = env.reset()
@@ -73,20 +76,19 @@ if __name__ == "__main__":
                 DISK_BLACK: [p2, p2_type],
                 DISK_WHITE: [p1, p1_type]
             }
-        
-        print("Starting round", game, "of", num_games)
-        if not quiet:
+        if verbosity > 0:
+            print("Starting round", game, "of", num_games)
+        if verbosity > 1:
             print(f"Black Player is {colors[DISK_BLACK][1]}")
             print(f"White Player is {colors[DISK_WHITE][1]}")
-        else:
-            round_start = time.time()
-        
+        round_start = time.time()
+
         terminated = False
         legal_actions = env.get_legal_moves(return_as='List')
         while not terminated:
             policy, name = colors[env.current_player]
             policy: PolicyPlayer = policy
-            if not quiet:
+            if verbosity > 1:
                 print(f"Player {name}'s turn!")
             if view:
                 env.render()
@@ -96,22 +98,23 @@ if __name__ == "__main__":
                 raise info['error']
             if ('legal_moves' in info):
                 legal_actions = info['legal_moves']
-            if not quiet:
+            if verbosity > 1:
                 print(f"{name} plays move {action}!")
             if view:
                 env.render()
 
         winner = env.get_winner()
         if (winner in colors):
-            print(f'Winner is {colors[winner][1]}!')
+            if verbosity > 0:
+                print(f'Winner is {colors[winner][1]}!')
             scores[colors[winner][1]] += 1
         else:
-            print("Game is a draw!")
+            if verbosity > 0:
+                print("Game is a draw!")
             scores['draws'] += 1
-        if quiet:
-            print('Round Finished in', time.time() - round_start,'seconds')
+        if verbosity > 0:
+            print('Round Finished in', time.time() - round_start, 'seconds')
     print("Final Scores:")
     for name in scores:
         print(f'\t{name}: {scores[name]}')
-    if quiet:
-        print('Games Finished in', time.time() - game_start, 'seconds')
+    print('Games Finished in', time.time() - game_start, 'seconds')

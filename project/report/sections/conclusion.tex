@@ -1,0 +1,8 @@
+\section{Conclusion}
+Our empirical research has proven several different key points, the efficacy of different reinforcement learning methods, as well as how useful and effective Neural Networks were on the generalization of an agent in an MDP environment.
+\subsection{Deep Q-Learning}
+Deep Q-Learning was shown to be effective against many agents many agents, indicating that it generalized, likely due to the prescence of a Neural Network. This goes against the conclusion in \citet{ree13} that Deep Q-Networks were not ideal at generalization. The only indication that this lack of generalization occurred is during selfplay training, as this trained the network with a moving target, rather than random moves.
+
+It is noted that Deep Q-Networks appear to be no less viable than Deep-SARSA and the minimal winrate of Deep-SARSA can be attributed to randomness. However, this may not be the case for larger games played, though this difference appears to be at most a factor of around 5\%.
+
+Limitations of simple Deep Q-Networks is likely do to overestimation bias as stated in \citet{8939117} with solution being through the use of double Q-learning, where an additional Q-network models is used to reduce this bias. Other important Q-networks to explore could have been Dueling Q-networks such as in \citet{DBLP:journals/corr/abs-2106-14642}, where a network represent the components of the Q-function, specifically the value function $V(s)$ and the advantage $A*()$ more accurately, increasing the stability of the algorithm.
